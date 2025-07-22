@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+config.env
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE/VSCode specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OneDrive path (indicating local file path)
+C:/Users/yas625/OneDrive/
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Package files (keep package.json, but ignore lock if not needed)
+# package-lock.json (uncomment if you want to ignore it)
+
+# Miscellaneous
+*.swp
+*~
