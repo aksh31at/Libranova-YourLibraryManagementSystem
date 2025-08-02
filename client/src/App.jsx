@@ -9,6 +9,7 @@ import ResetPassword from "./pages/ResetPassword";
 import { ToastContainer } from "react-toastify";
 
 
+
 const App = () => {
   return <Router>
     <Routes>
@@ -21,6 +22,7 @@ const App = () => {
     </Routes>
     <ToastContainer theme="dark"></ToastContainer>
     </Router>;
+    
 };
 
 export default App;

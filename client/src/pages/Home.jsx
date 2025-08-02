@@ -1,79 +1,102 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { Navigate } from "react-router-dom";
-import Sidebar from "../layout/SideBar";
-import UserDashboard from "../components/UserDashboard";
+import logo_with_title from "../assets/logo-with-title.png";
+import logoutIcon from "../assets/logout.png";
+import closeIcon from "../assets/white-close-icon.png";
+import dashboardIcon from "../assets/element.png";
+import bookIcon from "../assets/book.png";
+import catalogIcon from "../assets/catalog.png";
+import settingIcon from "../assets/setting-white.png";
+import usersIcon from "../assets/people.png";
+import { RiAdminFill } from "react-icons/ri";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 import AdminDashboard from "../components/AdminDashboard";
+import UserDashboard from "../components/UserDashboard";
 import BookManagement from "../components/BookManagement";
 import Catalog from "../components/Catalog";
 import Users from "../components/Users";
 import MyBorrowedBooks from "../components/MyBorrowedBooks";
 
 const Home = () => {
-  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
-  const [selectedComponent, setSelectedComponent] = useState("");
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { user, isAuthenticated } = useSelector(state => state.auth);
+  const [selectedComponent, setSelectedComponent] = useState("Dashboard");
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to={"/login"} />;
-  // }
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
+  return (
+    <div className="main-page">
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <img src={logo_with_title} alt="Logo" />
+        </div>
+        <div className="sidebar-items">
+          <button onClick={() => setSelectedComponent("Dashboard")}>
+            <img src={dashboardIcon} alt="Dashboard" />
+            Dashboard
+          </button>
+          <button onClick={() => setSelectedComponent("Books")}>
+            <img src={bookIcon} alt="Books" />
+            Book Management
+          </button>
+          {user?.role === "Admin" && (
+            <button onClick={() => setSelectedComponent("Catalog")}>
+              <img src={catalogIcon} alt="Catalog" />
+              Catalog
+            </button>
+          )}
+          {user?.role === "Admin" && (
+            <button onClick={() => setSelectedComponent("Users")}>
+              <img src={usersIcon} alt="Users" />
+              Users
+            </button>
+          )}
+          <button onClick={() => setSelectedComponent("My Borrowed Books")}>
+            <img src={settingIcon} alt="Settings" />
+            My Borrowed Books
+          </button>
+        </div>
+        <div className="sidebar-footer">
+          <button onClick={handleLogout}>
+            <img src={logoutIcon} alt="Logout" />
+            Logout
+          </button>
+        </div>
+      </div>
 
-  return(
-  <>
-  <div className="relative md:pl-64 min-h-screen bg-gray-100 flex">
-    <div className="md:hidden z-10 absolute right-6 top-4 sm:top-6 flex justify-center items-center bg-black text-white h-9 w-9 rounded-md">
-      <GiHamburgerMenu 
-      className="text-2xl" 
-      onClick={()=>setIsSideBarOpen(!isSideBarOpen)}
-      />
-    </div>
-    <Sidebar 
-    isSideBarOpen={isSideBarOpen} 
-    setIsSideBarOpen={setIsSideBarOpen} 
-    setSelectedComponent={setSelectedComponent}
-    />
-    {
-      (() => {
-        switch (selectedComponent) {
-          case "Dashboard":
-            return user?.role === "User" ? (
-              <UserDashboard />
-            ) : (
-              <AdminDashboard />
-            );
-            break;
-          case "Books":
-            return <BookManagement />;
-            break;
-          case "Catalog":
-            if (user.role === "Admin") {
-              return <Catalog />;
+      <div className="main-content">
+        <div className="header">
+          <h2>{selectedComponent}</h2>
+          {user?.role === "Admin" && <RiAdminFill size={24} color="#fff" />}
+        </div>
+
+        <div className="content-body">
+          {user && (() => {
+            switch (selectedComponent) {
+              case "Dashboard":
+                return user.role === "User" ? <UserDashboard /> : <AdminDashboard />;
+              case "Books":
+                return <BookManagement />;
+              case "Catalog":
+                return user.role === "Admin" ? <Catalog /> : null;
+              case "Users":
+                return user.role === "Admin" ? <Users /> : null;
+              case "My Borrowed Books":
+                return <MyBorrowedBooks />;
+              default:
+                return user.role === "User" ? <UserDashboard /> : <AdminDashboard />;
             }
-            break;
-          case "Users":
-            if (user.role === "Admin") {
-              return <Users/>;
-            }
-            return null;
-          case "My Borrowed Books":
-              return <MyBorrowedBooks />;
-            return null;
-          default:
-            return user?.role === "User" ? (
-              <UserDashboard />
-            ) : (
-              <AdminDashboard />
-            );
-            break;
-        }
-      })()}
+          })()}
+        </div>
+      </div>
     </div>
-    </>
   );
-  
 };
 
 export default Home;
